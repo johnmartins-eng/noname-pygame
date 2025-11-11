@@ -2,11 +2,13 @@ import math
 import pygame
 from pygame.locals import *
 
+from entities.enemies.skeleton import Skeleton
+from utils.camera import Camera
 from entities.player import Player
 
 
-SCREEN_WIDTH =  900
-SCREEN_HEIGHT = 500 
+SCREEN_WIDTH =  800
+SCREEN_HEIGHT = 600 
 
 # --- Cores ---
 BLACK = (10, 10, 10)
@@ -25,26 +27,35 @@ if __name__ == "__main__":
     pygame.display.set_caption("NoName")
     clock = pygame.time.Clock()
 
-    # Create sprite groups
+    background = pygame.image.load("assets/backgrounds/bg.png").convert()
+    background = pygame.transform.scale(background, (1600, 1600))
+
     all_sprites = pygame.sprite.Group()
 
-    # Create player and add to group
     player = Player()
     all_sprites.add(player)
+    skeleton = Skeleton()
+    all_sprites.add(skeleton)
+    camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
 
     app_running = True
     while app_running:
         clock.tick(FPS)
         screen.fill(GRAY)
 
-        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 app_running = False
 
-        # Update & draw all sprites
+
         all_sprites.update()
-        all_sprites.draw(screen)
+
+        camera.update(player)
+
+        screen.blit(background, (-camera.camera_rect.x, -camera.camera_rect.y))
+
+        for sprite in all_sprites:
+            screen.blit(sprite.image, camera.apply(sprite))
 
         pygame.display.flip()
 
