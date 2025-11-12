@@ -9,7 +9,7 @@ class Camera:
     def apply(self, target: pygame.sprite.Sprite):
         return target.rect.move(-self.camera_rect.x, -self.camera_rect.y)
 
-    def update(self, target: pygame.sprite.Sprite):
+    def update_position(self, target: pygame.sprite.Sprite):
         x = target.rect.centerx - self.width // 2
         y = target.rect.centery - self.height // 2
 

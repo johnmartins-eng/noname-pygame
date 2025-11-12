@@ -48,9 +48,9 @@ if __name__ == "__main__":
                 app_running = False
 
 
-        all_sprites.update()
+        all_sprites.update(player)
 
-        camera.update(player)
+        camera.update_position(player)
 
         screen.blit(background, (-camera.camera_rect.x, -camera.camera_rect.y))
 

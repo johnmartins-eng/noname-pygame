@@ -76,7 +76,7 @@ class Player(BaseEntity):
         else:
             self.animation_mode = AnimationModeEnum.IDLE
 
-    def update(self):
+    def update(self, *args, **kwargs):
         self.__handle_input()
         self.update_animation()
     
@@ -84,3 +84,4 @@ class Player(BaseEntity):
         self.health -= amount
         if self.health <= 0:
             self.kill()
+            #TODO: make a screen when player loses.

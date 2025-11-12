@@ -49,3 +49,4 @@ class BaseEntity(pygame.sprite.Sprite, ABC):
     @abstractmethod
     def take_damage(self, amount):
         raise NotImplementedError
+    

@@ -1,10 +1,11 @@
+import math
 import pygame
 from entities.base_entity import AnimationModeEnum
 from entities.enemies.base_enemy import BaseEnemy
 
 
 class Skeleton(BaseEnemy):
-    def __init__(self, x=405, y=205, health=40, base_damage=5, speed=1.5):
+    def __init__(self, x=100, y=50, health=100, base_damage=5, speed=1.5):
         super().__init__(x, y, health, base_damage, speed)
         self.animation_mode = AnimationModeEnum.RUNNING
 
@@ -36,10 +37,24 @@ class Skeleton(BaseEnemy):
         self.health -= amount
         if self.health <= 0:
             self.kill()
+    
+    def attack(self, target):
+        target.take_damage(self.base_damage)
 
     def go_to_player(self, target: pygame.sprite.Sprite):
-        pass
+        # Find direction vector (dx, dy) between enemy and player.
+        dx, dy = target.rect.x - self.rect.x, target.rect.y - self.rect.y
+        dist = math.hypot(dx, dy)
+        if dist <= 0:
+            self.attack(target)
+            return
+        dx, dy = dx / dist, dy / dist  # Normalize.
+        # Move along this normalized vector towards the player at current speed.
+        self.rect.x += dx * self.speed
+        self.rect.y += dy * self.speed
 
-    def update(self):
+    def update(self, target: pygame.sprite.Sprite):
         self.update_animation()
-        self.go_to_player()
+        if target is not None:
+            self.go_to_player(target)
+        
