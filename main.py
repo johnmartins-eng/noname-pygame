@@ -41,8 +41,8 @@ if __name__ == "__main__":
     app_running = True
     while app_running:
         clock.tick(FPS)
-        screen.fill(GRAY)
 
+        screen.fill(GRAY)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 app_running = False

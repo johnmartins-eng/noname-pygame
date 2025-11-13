@@ -17,6 +17,8 @@ class BaseEntity(pygame.sprite.Sprite, ABC):
         self.speed = speed
         self.health = health
         self.base_damage = base_damage
+
+        self.dying = False
         
 
         self.frames: list[pygame.Surface] = []

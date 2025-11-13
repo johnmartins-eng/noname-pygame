@@ -11,6 +11,7 @@ PLAYER_SPEED = 5
 class Player(BaseEntity):
     def __init__(self):
         super().__init__(x=START_POS_X, y=START_POS_Y, health=200, base_damage=10, speed=3.0)
+        
 
     def load_frames(self):
         # idle frames
@@ -23,9 +24,14 @@ class Player(BaseEntity):
             name = f"sprite_0{i}.png" if i < 10 else f"sprite_{i}.png"
             img = pygame.image.load(f"assets/character/running/{name}").convert_alpha()
             self.frames.append(pygame.transform.scale(img, (70, 70)))
+        
+        #dying frames
+        for i in range(37, 47):
+            img = pygame.image.load(f"assets/character/dying/sprite_{i}.png").convert_alpha()
+            self.frames.append(pygame.transform.scale(img, (70, 70)))
 
     def update_animation(self):
-        if self.frame_count >= 60:
+        if self.animation_mode != AnimationModeEnum.DYING and self.frame_count >= 60:
             self.frame_count = 0
 
         if self.animation_mode == AnimationModeEnum.IDLE:  # idle
@@ -34,6 +40,9 @@ class Player(BaseEntity):
         elif self.animation_mode == AnimationModeEnum.RUNNING:  # running
             frame_intervals = [7.5, 15, 22.5, 30, 37.5, 45, 52.5, 60]
             frame_ids = [6, 7, 8, 9, 10, 11, 12]
+        elif self.animation_mode == AnimationModeEnum.DYING:
+            frame_intervals = [6, 12, 18, 24, 30, 36, 42, 48, 54, 60]
+            frame_ids = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 
         for i in range(len(frame_intervals) - 1):
             if frame_intervals[i] <= self.frame_count < frame_intervals[i + 1]:
@@ -41,6 +50,7 @@ class Player(BaseEntity):
                 break
 
         self.frame_count += 1
+        
         self.image = self.frames[self.active_frame]
         if not self.facing_right:
             self.image = pygame.transform.flip(self.image, True, False)
@@ -77,11 +87,18 @@ class Player(BaseEntity):
             self.animation_mode = AnimationModeEnum.IDLE
 
     def update(self, *args, **kwargs):
-        self.__handle_input()
-        self.update_animation()
+        if self.dying:
+            self.update_animation()
+            if self.frame_count >= 60:
+                self.kill()
+        else:
+            self.__handle_input()
+            self.update_animation()
     
     def take_damage(self, amount):
         self.health -= amount
-        if self.health <= 0:
-            self.kill()
+        if self.health <= 0 and not self.dying:
+            self.animation_mode = AnimationModeEnum.DYING
+            self.frame_count = 0
+            self.dying = True
             #TODO: make a screen when player loses.
