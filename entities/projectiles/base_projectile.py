@@ -1,35 +1,25 @@
 import pygame
 from abc import ABC, abstractmethod
-from enum import Enum
 
+from entities.base_entity import BaseEntity
+from entities.enemies.base_enemy import BaseEnemy
+from entities.player import Player
 from utils.direction_enum import DirectionEnum
 
-class AnimationModeEnum(Enum):
-    IDLE = 0,
-    RUNNING = 1,
-    ATTACKING = 2,
-    DYING = 3
 
-
-class BaseEntity(pygame.sprite.Sprite, ABC):
-    def __init__(self, x: float, y: float, health: int, base_damage: int, speed: float):
+class BaseProjectile(pygame.sprite.Sprite, ABC):
+    def __init__(self, player: Player, speed: float):
         super().__init__()
-        self.x = x
-        self.y = y
+        self.x = player.rect.x
+        self.y = player.rect.y
         self.speed = speed
-        self.health = health
-        self.base_damage = base_damage
-
-        self.dying = False
-        
-        self.direction: DirectionEnum = DirectionEnum.RIGHT
+        self.base_damage = player.base_damage
+        self.direction = player.direction
 
         self.frames: list[pygame.Surface] = []
         self.image: pygame.Surface | None = None
         self.rect: pygame.Rect | None = None
 
-        self.facing_right: bool = True
-        self.animation_mode: AnimationModeEnum = AnimationModeEnum.IDLE
         self.frame_count: float = 0
         self.active_frame: int = 0
 
@@ -43,6 +33,11 @@ class BaseEntity(pygame.sprite.Sprite, ABC):
             self.image.fill((255, 0, 255))
             self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+    
+    def on_hit(self, target: BaseEntity):
+        if isinstance(target, BaseEnemy):
+            target.take_damage(self.base_damage)
+
     @abstractmethod
     def load_frames(self):
         raise NotImplementedError
@@ -50,8 +45,3 @@ class BaseEntity(pygame.sprite.Sprite, ABC):
     @abstractmethod
     def update_animation(self):
         raise NotImplementedError
-    
-    @abstractmethod
-    def take_damage(self, amount):
-        raise NotImplementedError
-    

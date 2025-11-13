@@ -2,15 +2,19 @@ import pygame
 import math
 
 from entities.base_entity import AnimationModeEnum, BaseEntity
+from utils.direction_enum import DirectionEnum
 
 START_POS_X = 400
 START_POS_Y = 200
 
 PLAYER_SPEED = 5
 
+BASE_RADIUS = 200 # Pixels
+
 class Player(BaseEntity):
     def __init__(self):
-        super().__init__(x=START_POS_X, y=START_POS_Y, health=200, base_damage=10, speed=3.0)
+        super().__init__(x=START_POS_X, y=START_POS_Y, health=200, base_damage=400, speed=3.0)
+        self.base_radius = BASE_RADIUS # Pixels
         
 
     def load_frames(self):
@@ -86,6 +90,8 @@ class Player(BaseEntity):
         else:
             self.animation_mode = AnimationModeEnum.IDLE
 
+        self.change_direction(dx, dy)
+
     def update(self, *args, **kwargs):
         if self.dying:
             self.update_animation()
@@ -94,6 +100,7 @@ class Player(BaseEntity):
         else:
             self.__handle_input()
             self.update_animation()
+            
     
     def take_damage(self, amount):
         self.health -= amount
@@ -102,3 +109,28 @@ class Player(BaseEntity):
             self.frame_count = 0
             self.dying = True
             #TODO: make a screen when player loses.
+
+    def change_direction(self, dx: int, dy: int):
+        if dx == 1 and dy == 0:
+            self.direction = DirectionEnum.RIGHT
+        
+        if dx == -1 and dy == 0:
+            self.direction = DirectionEnum.LEFT
+
+        if dx == 0 and dy == 1:
+            self.direction = DirectionEnum.UP
+
+        if dx == 0 and dy == -1:
+            self.direction = DirectionEnum.DOWN
+
+        if dx == 1 and dy == 1:
+            self.direction = DirectionEnum.DIAGONAL_RIGHT_UP
+
+        if dx == 1 and dy == -1:
+            self.direction = DirectionEnum.DIAGONAL_RIGHT_DOWN
+
+        if dx == -1 and dy == -1:
+            self.direction = DirectionEnum.DIAGONAL_LEFT_DOWN
+
+        if dx == -1 and dy == 1:
+            self.direction = DirectionEnum.DIAGONAL_LEFT_UP

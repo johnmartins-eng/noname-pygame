@@ -1,9 +1,7 @@
 from entities.base_entity import BaseEntity
 from abc import ABC
 
-BASE_RADIUS = 40 # Pixels
-
 class BaseEnemy(BaseEntity, ABC):
     def __init__(self, x, y, health=40, base_damage=5, speed=1.5):
         super().__init__(x, y, health, base_damage, speed)
-        self.base_radius = BASE_RADIUS # Pixels
+        
