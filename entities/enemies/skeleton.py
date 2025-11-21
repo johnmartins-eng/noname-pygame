@@ -39,6 +39,7 @@ class Skeleton(BaseEnemy):
         # Flip image based on facing direction
         if not self.facing_right:
             self.image = pygame.transform.flip(self.image, True, False)
+        
 
     def take_damage(self, amount):
         self.health -= amount

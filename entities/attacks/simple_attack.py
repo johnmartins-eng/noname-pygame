@@ -18,7 +18,7 @@ class SimpleAttack(BaseAttack):
         for i in range(0, 4):
             img = pygame.image.load(f"assets/attacks/player/sprite_{i}.png").convert_alpha()
 
-            stretched = pygame.transform.scale(img, (150, 30))
+            stretched = pygame.transform.scale(img, (200, 80))
 
             rotated = pygame.transform.rotate(stretched, -35)
 
@@ -42,6 +42,8 @@ class SimpleAttack(BaseAttack):
         if not self.player.facing_right:
             self.image = pygame.transform.flip(self.image, True, False)
 
+        self.mask = pygame.mask.from_surface(self.image)
+
     def update(self, enemies, *args, **kwargs):
         self.update_animation()
         offset_x = 70 if self.player.facing_right else -70
@@ -54,7 +56,7 @@ class SimpleAttack(BaseAttack):
 
         if self.active_start <= elapsed <= self.active_end:
             if not self.damage_done:
-                hits = pygame.sprite.spritecollide(self, enemies, False)
+                hits = pygame.sprite.spritecollide(self, enemies, False, pygame.sprite.collide_mask)
                 for enemy in hits:
                     enemy.take_damage(self.player.base_damage)
                 self.damage_done = True
