@@ -17,8 +17,16 @@ class Skeleton(BaseEnemy):
         for i in range(0, 12):
             name = f"sprite_0{i}.png" if i < 10 else f"sprite_{i}.png"
             img = pygame.image.load(
-                f"assets/enemies/skeleton/{name}").convert_alpha()
+                f"assets/enemies/skeleton/walking/{name}").convert_alpha()
             self.frames.append(pygame.transform.scale(img, (50, 70)))
+
+        # dying frames
+        for i in range(0, 15):
+            name = f"sprite_0{i}.png" if i < 10 else f"sprite_{i}.png"
+            img = pygame.image.load(
+                f"assets/enemies/skeleton/dying/{name}").convert_alpha()
+            self.frames.append(pygame.transform.scale(img, (50, 70)))
+
 
     def update_animation(self):
         if self.frame_count >= 60:
@@ -26,11 +34,15 @@ class Skeleton(BaseEnemy):
 
         if self.animation_mode == AnimationModeEnum.RUNNING:
             frame_intervals = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
-            frame_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            frame_indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+        if self.animation_mode == AnimationModeEnum.DYING:
+            frame_intervals = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60]
+            frame_indexes = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
         for i in range(len(frame_intervals) - 1):
             if frame_intervals[i] <= self.frame_count < frame_intervals[i + 1]:
-                self.active_frame = frame_ids[i]
+                self.active_frame = frame_indexes[i]
                 break
 
         self.frame_count += 1
@@ -44,10 +56,10 @@ class Skeleton(BaseEnemy):
     def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
-            j = Jewel(self.rect.x, self.rect.y)
-            self.items_group.add(j)
-            self.all_sprites_group.add(j)
-            self.kill()
+            self.animation_mode = AnimationModeEnum.DYING
+            self.frame_count = 0
+            self.dying = True
+            
 
     def attack(self, target):
         target.take_damage(self.base_damage)
@@ -70,6 +82,15 @@ class Skeleton(BaseEnemy):
             self.facing_right = False
 
     def update(self, target: pygame.sprite.Sprite, items_group: pygame.sprite.Group = None, all_sprites_group: pygame.sprite.Group =None, *args, **kwargs):
+        if self.dying:
+            self.update_animation()
+            if self.frame_count >= 60:
+                j = Jewel(self.rect.x, self.rect.y)
+                self.items_group.add(j)
+                self.all_sprites_group.add(j)
+                self.kill()
+            return
+            
         self.update_animation()
         self.items_group = items_group
         self.all_sprites_group = all_sprites_group
