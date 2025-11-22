@@ -97,7 +97,8 @@ class GameOverScreen(BaseScreen):
             if mouse_click_pos:
                 for i, rect in enumerate(btn_rects):
                     if rect.collidepoint(mouse_click_pos):
-                        return "retry" if i == 0 else "quit"
+                        # Reiniciar -> "retry" ; Sair -> voltar ao menu principal
+                        return "retry" if i == 0 else "menu"
 
             pygame.display.flip()
             clock.tick(60)

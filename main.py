@@ -41,18 +41,24 @@ if __name__ == "__main__":
 
     print("Jogador logado:", username)
 
+    # Mostrar menu principal em loop até o jogador escolher iniciar ou sair
     menu = MainMenu(screen, username)
-    menu_choice = menu.run()
+    while True:
+        menu_choice = menu.run()
+        if menu_choice == "quit":
+            pygame.quit()
+            sys.exit()
 
-    if menu_choice == "quit":
-        pygame.quit()
-        sys.exit()
+        if menu_choice == "ranking":
+            ranking_screen = RankingScreen(screen)
+            ranking_choice = ranking_screen.run()
+            if ranking_choice == "quit":
+                pygame.quit(); sys.exit()
+            # ao retornar do ranking, reexibe o menu
+            continue
 
-    if menu_choice == "ranking":
-        ranking_screen = RankingScreen(screen)
-        ranking_choice = ranking_screen.run()
-        if ranking_choice == "quit":
-            pygame.quit(); sys.exit()
+        if menu_choice == "start":
+            break
 
     pygame.display.set_caption("NoName")
     clock = pygame.time.Clock()
@@ -95,25 +101,41 @@ if __name__ == "__main__":
                 continue
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                pause = PauseScreen(screen, SCREEN_WIDTH, SCREEN_HEIGHT)
-                result = pause.run()
+                    pause = PauseScreen(screen, SCREEN_WIDTH, SCREEN_HEIGHT)
+                    result = pause.run()
 
-                if result == "quit":
-                    pygame.quit(); sys.exit()
-                
-                elif result == "menu":
-                    menu = MainMenu(screen, username)
-                    menu_choice = menu.run()
-                    if menu_choice == "start":
-                        # RESET GAME
-                        player = Player()
-                        all_sprites = pygame.sprite.Group()
-                        enemies = pygame.sprite.Group()
-                        items = pygame.sprite.Group()
-                        attacks = pygame.sprite.Group()
-                        all_sprites.add(player)
-                        level_up_screen = LevelUpScreen(SCREEN_WIDTH, SCREEN_HEIGHT)
-                        continue 
+                    if result == "quit":
+                        pygame.quit(); sys.exit()
+
+                    if result == "resume":
+                        # volta ao jogo
+                        pass
+
+                    if result == "menu":
+                        # abrir menu principal (loop) e tratar opções
+                        menu = MainMenu(screen, username)
+                        while True:
+                            menu_choice = menu.run()
+                            if menu_choice == "quit":
+                                pygame.quit(); sys.exit()
+                            if menu_choice == "ranking":
+                                ranking_screen = RankingScreen(screen)
+                                ranking_choice = ranking_screen.run()
+                                if ranking_choice == "quit":
+                                    pygame.quit(); sys.exit()
+                                continue
+                            if menu_choice == "start":
+                                # RESET GAME
+                                player = Player()
+                                all_sprites = pygame.sprite.Group()
+                                enemies = pygame.sprite.Group()
+                                items = pygame.sprite.Group()
+                                attacks = pygame.sprite.Group()
+                                all_sprites.add(player)
+                                level_up_screen = LevelUpScreen(SCREEN_WIDTH, SCREEN_HEIGHT)
+                                break
+                        # continue the main loop with the new/reset state
+                        continue
 
         # 2. UPDATE PHASE
         # Only update game logic if we are NOT choosing an upgrade
@@ -163,9 +185,9 @@ if __name__ == "__main__":
                 from screens.game_over import GameOverScreen
                 game_over = GameOverScreen(screen)
                 choice = game_over.run()
-                
+
                 if choice == "retry":
-                    # Reset everything
+                    # Reset everything and continue playing
                     player = Player()
                     all_sprites = pygame.sprite.Group()
                     enemies = pygame.sprite.Group()
@@ -174,10 +196,37 @@ if __name__ == "__main__":
                     all_sprites.add(player)
                     camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
                     level_up_screen.is_active = False
-                elif choice == "menu":
-                    pass
-                else:
-                    pygame.quit(); sys.exit()
+                    continue
+
+                if choice == "menu":
+                    # Voltar ao menu principal (loop) e tratar opções
+                    menu = MainMenu(screen, username)
+                    while True:
+                        menu_choice = menu.run()
+                        if menu_choice == "quit":
+                            pygame.quit(); sys.exit()
+                        if menu_choice == "ranking":
+                            ranking_screen = RankingScreen(screen)
+                            ranking_choice = ranking_screen.run()
+                            if ranking_choice == "quit":
+                                pygame.quit(); sys.exit()
+                            continue
+                        if menu_choice == "start":
+                            # Reset game and resume
+                            player = Player()
+                            all_sprites = pygame.sprite.Group()
+                            enemies = pygame.sprite.Group()
+                            items = pygame.sprite.Group()
+                            attacks = pygame.sprite.Group()
+                            all_sprites.add(player)
+                            camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
+                            level_up_screen.is_active = False
+                            break
+                    # after returning from menu, continue main loop with new state
+                    continue
+
+                # any other response -> quit
+                pygame.quit(); sys.exit()
 
         pygame.display.flip()
 
