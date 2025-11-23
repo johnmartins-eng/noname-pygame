@@ -26,6 +26,7 @@ class Player(BaseEntity):
 
         self.level = 1
         self.current_xp = 0
+        self.total_xp = 0
         self.xp_to_next_level = 100
         self.leveled_up = False
 
@@ -163,6 +164,7 @@ class Player(BaseEntity):
     # Experience and Leveling System
     def add_xp(self, amount):
         self.current_xp += amount
+        self.total_xp += amount
         if self.current_xp >= self.xp_to_next_level:
             self.level_up()
             return True  # Sinaliza que o jogador subiu de nível
@@ -170,6 +172,7 @@ class Player(BaseEntity):
 
     def level_up(self):
         self.level += 1 
+        self.current_xp -= self.xp_to_next_level
         self.xp_to_next_level += 100
         print(f"Level {self.level} reached!")
         self.leveled_up = True
