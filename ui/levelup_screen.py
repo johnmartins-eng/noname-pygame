@@ -1,7 +1,8 @@
 import pygame
 import random
 from screens.base_screen import BaseScreen
-from ui.upgrade_data import UPGRADE_POOL
+from ui.upgrade_data import UPGRADE_POOL, UpgradeData
+from utils.game_context import GameContext
 
 # --- RETRO COLOR PALETTE ---
 COLOR_BG_OVERLAY = (0, 0, 0, 180)
@@ -48,17 +49,17 @@ class LevelUpScreen(BaseScreen):
             rect = pygame.Rect(card_x, card_y_pos, card_w, card_h)
             self.card_rects.append(rect)
 
-    def select_option(self, index, player, all_sprites, attacks_group, orbitals_group):
+    def select_option(self, index, game_context: GameContext):
         if 0 <= index < len(self.current_choices):
-            chosen_upgrade = self.current_choices[index]
+            chosen_upgrade: UpgradeData = self.current_choices[index]
             
-            chosen_upgrade.effect_func(player, all_sprites, attacks_group, orbitals_group)
+            chosen_upgrade.effect_func(game_context)
             
             self.is_active = False
             self.current_choices = []
             self.card_rects = []
 
-    def handle_input(self, event, player, all_sprites, attacks_group, orbitals_group):
+    def handle_input(self, event, game_context: GameContext):
         if not self.is_active:
             return
 
@@ -67,16 +68,16 @@ class LevelUpScreen(BaseScreen):
                 mouse_pos = pygame.mouse.get_pos()
                 for i, rect in enumerate(self.card_rects):
                     if rect.collidepoint(mouse_pos):
-                        self.select_option(i, player, all_sprites, attacks_group, orbitals_group)
+                        self.select_option(i, game_context)
 
         # Keyboard support (optional)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1 or event.key == pygame.K_KP1:
-                self.select_option(0, player, all_sprites, attacks_group)
+                self.select_option(0, game_context)
             elif event.key == pygame.K_2 or event.key == pygame.K_KP2:
-                self.select_option(1, player, all_sprites, attacks_group)
+                self.select_option(1, game_context)
             elif event.key == pygame.K_3 or event.key == pygame.K_KP3:
-                self.select_option(2, player, all_sprites, attacks_group)
+                self.select_option(2, game_context)
 
     
 

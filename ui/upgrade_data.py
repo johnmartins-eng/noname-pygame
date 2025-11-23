@@ -1,5 +1,6 @@
 # THIS CLASS IS JUST A PLACEHOLDER!!!!!!!!!!!!
 from entities.orbitals.fire import Fire
+from utils.game_context import GameContext
 
 
 class UpgradeData:
@@ -12,20 +13,22 @@ class UpgradeData:
 
         self.icon_color = icon_color
 
-def effect_fire_circle(player, all_sprites, attacks, orbitals):
+def effect_fire_circle(game_context):
+    player = game_context.player
     new_fire = Fire(player)
-    orbitals.add(new_fire)
-    all_sprites.add(new_fire)
-    attacks.add(new_fire)
+    game_context.orbitals.add(new_fire)
+    game_context.all_sprites.add(new_fire)
+    game_context.attacks.add(new_fire)
 
-
-def effect_might(player, *args, **kwargs):
+def effect_might(game_context):
+    player = game_context.player
+    player.base_damage += 50
     print(f"Might chosen! Damage is now {player.base_damage}")
 
-def effect_swiftness(player, *args, **kwargs):
-    print(f"Swiftness chosen! Speed is now {player.speed}")
-
-def effect_health(player, *args, **kwargs):
+def effect_health(game_context):
+    player = game_context.player
+    heal_amount = player.max_health * 0.30
+    player.health = min(player.health + heal_amount, player.max_health)
     print(f"Health potion! HP is now {player.health}")
 
 

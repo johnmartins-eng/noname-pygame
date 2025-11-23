@@ -4,6 +4,7 @@ import math
 from entities.attacks.simple_attack import SimpleAttack
 from entities.base_entity import AnimationModeEnum, BaseEntity
 from utils.direction_enum import DirectionEnum
+from utils.game_context import GameContext
 
 START_POS_X = 400
 START_POS_Y = 200
@@ -15,8 +16,7 @@ BASE_RADIUS = 200  # Pixels
 
 class Player(BaseEntity):
     def __init__(self):
-        super().__init__(x=START_POS_X, y=START_POS_Y,
-                         health=200, base_damage=400, speed=3.0)
+        super().__init__(x=START_POS_X, y=START_POS_Y, health=200, base_damage=400, speed=3.0, assets=[])
         self.base_radius = BASE_RADIUS  # Pixels
 
         self.attack_cooldown = 1400 
@@ -115,7 +115,7 @@ class Player(BaseEntity):
             attacks_group.add(attack)
             all_sprites_group.add(attack)
 
-    def update(self, attacks_group=None, all_sprites_group=None, *args, **kwargs):
+    def update(self, game_context: GameContext, *args, **kwargs):
         if self.dying:
             self.update_animation()
             if self.frame_count >= 60:
@@ -125,8 +125,8 @@ class Player(BaseEntity):
         self.__handle_input()
         self.update_animation()
 
-        if attacks_group is not None and all_sprites_group is not None:
-            self.__try_auto_attack(attacks_group, all_sprites_group)
+        if game_context.attacks is not None and game_context.all_sprites is not None:
+            self.__try_auto_attack(game_context.attacks, game_context.all_sprites)
 
     def take_damage(self, amount):
         self.health -= amount

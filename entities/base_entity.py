@@ -12,18 +12,19 @@ class AnimationModeEnum(Enum):
 
 
 class BaseEntity(pygame.sprite.Sprite, ABC):
-    def __init__(self, x: float, y: float, health: int, base_damage: int, speed: float):
+    def __init__(self, x: float, y: float, health: int, base_damage: int, speed: float, assets: list):
         super().__init__()
         self.x = x
         self.y = y
         self.speed = speed
         self.health = health
         self.base_damage = base_damage
+        self.assets = assets
 
         self.dying = False
         
         self.direction: DirectionEnum = DirectionEnum.RIGHT
-
+        
         self.frames: list[pygame.Surface] = []
         self.image: pygame.Surface | None = None
         self.rect: pygame.Rect | None = None

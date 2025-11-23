@@ -8,8 +8,7 @@ from pygame.locals import *
 from entities.attacks.simple_attack import SimpleAttack
 from entities.enemies.skeleton import Skeleton
 from screens.main_menu import MainMenu
-from ui.hud import HUD
-from utils.camera import Camera
+from utils.assets_load_manager import AssetsManager
 from entities.player import Player
 from screens.game_over import GameOverScreen
 from screens.login import LoginScreen
@@ -18,6 +17,7 @@ from screens.ranking import RankingScreen
 
 # NEW IMPORT
 from ui.levelup_screen import LevelUpScreen
+from utils.game_context import GameContext
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -59,26 +59,17 @@ if __name__ == "__main__":
         if menu_choice == "start":
             break
 
+    assets: AssetsManager = AssetsManager.get_instance()
+    game_context: GameContext = GameContext()
+
     pygame.display.set_caption("NoName")
     clock = pygame.time.Clock()
-
+    
     background = pygame.image.load("assets/backgrounds/bg.png").convert()
     background = pygame.transform.scale(background, (1600, 1600))
 
-    # Initialize Groups
-    all_sprites = pygame.sprite.Group()
-    enemies = pygame.sprite.Group()
-    projectiles = pygame.sprite.Group()
-    attacks = pygame.sprite.Group()
-    items = pygame.sprite.Group()
-    orbitals = pygame.sprite.Group()
-
     player = Player()
-    all_sprites.add(player)
-
-    camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
-
-    hud = HUD(SCREEN_WIDTH, SCREEN_HEIGHT)
+    game_context.add_player(player)
     
     level_up_screen: LevelUpScreen = LevelUpScreen(SCREEN_WIDTH, SCREEN_HEIGHT)
 
@@ -97,7 +88,7 @@ if __name__ == "__main__":
                 app_running = False
 
             if level_up_screen.is_active:
-                level_up_screen.handle_input(event, player, all_sprites, attacks, orbitals)
+                level_up_screen.handle_input(event, game_context)
                 continue
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
@@ -126,12 +117,9 @@ if __name__ == "__main__":
                                 continue
                             if menu_choice == "start":
                                 # RESET GAME
+                                game_context.reset()
                                 player = Player()
-                                all_sprites = pygame.sprite.Group()
-                                enemies = pygame.sprite.Group()
-                                items = pygame.sprite.Group()
-                                attacks = pygame.sprite.Group()
-                                all_sprites.add(player)
+                                game_context.add_player(player)
                                 level_up_screen = LevelUpScreen(SCREEN_WIDTH, SCREEN_HEIGHT)
                                 break
                         # continue the main loop with the new/reset state
@@ -142,7 +130,7 @@ if __name__ == "__main__":
         if not level_up_screen.is_active:
             
             # A. Spawning Logic
-            if len(enemies) <= 20:
+            if len(game_context.enemies) <= 20:
                 if current_time - last_spawn_time >= SPAWN_INTERVAL:
                     last_spawn_time = current_time
                     radius = player.base_radius
@@ -150,33 +138,33 @@ if __name__ == "__main__":
                     offset_y = random.uniform(-radius, radius)
                     new_x = player.rect.x + offset_x
                     new_y = player.rect.y + offset_y
-                    new_skeleton = Skeleton(x=new_x, y=new_y)
-                    all_sprites.add(new_skeleton)
-                    enemies.add(new_skeleton)
+                    new_skeleton = Skeleton(x=new_x, y=new_y, assets=assets.get_images("skeleton"))
+                    game_context.all_sprites.add(new_skeleton)
+                    game_context.enemies.add(new_skeleton)
 
             # B. Entity Updates
-            player.update(attacks, all_sprites)
-            attacks.update(enemies)
-            enemies.update(player, items, all_sprites)
-            items.update(player)
-            orbitals.update(enemies)
+            game_context.player.update(game_context)
+            game_context.attacks.update(game_context.enemies)
+            game_context.enemies.update(game_context)
+            game_context.items.update(player)
+            game_context.orbitals.update(game_context.enemies)
 
             if player.leveled_up:
                 level_up_screen.generate_choices()
                 player.leveled_up = False
 
-            camera.update_position(player)
+            game_context.camera.update_position(player)
 
         # 3. DRAW PHASE
         screen.fill(GRAY)
-        screen.blit(background, (-camera.camera_rect.x, -camera.camera_rect.y))
+        screen.blit(background, (-game_context.camera.camera_rect.x, -game_context.camera.camera_rect.y))
 
-        for sprite in all_sprites:
-            screen.blit(sprite.image, camera.apply(sprite))
+        for sprite in game_context.all_sprites:
+            screen.blit(sprite.image, game_context.camera.apply(sprite))
 
         # DRAW HUD
         if not level_up_screen.is_active:
-            hud.draw(screen, player, camera)
+            game_context.hud.draw(screen, player, game_context.camera)
 
         # DRAW LEVEL UP
         if level_up_screen.is_active:
@@ -189,13 +177,9 @@ if __name__ == "__main__":
 
                 if choice == "retry":
                     # Reset everything and continue playing
+                    game_context.reset()
                     player = Player()
-                    all_sprites = pygame.sprite.Group()
-                    enemies = pygame.sprite.Group()
-                    items = pygame.sprite.Group()
-                    attacks = pygame.sprite.Group()
-                    all_sprites.add(player)
-                    camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
+                    game_context.add_player(player)
                     level_up_screen.is_active = False
                     continue
 
@@ -214,13 +198,9 @@ if __name__ == "__main__":
                             continue
                         if menu_choice == "start":
                             # Reset game and resume
+                            game_context.reset()
                             player = Player()
-                            all_sprites = pygame.sprite.Group()
-                            enemies = pygame.sprite.Group()
-                            items = pygame.sprite.Group()
-                            attacks = pygame.sprite.Group()
-                            all_sprites.add(player)
-                            camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
+                            game_context.add_player(player)
                             level_up_screen.is_active = False
                             break
                     # after returning from menu, continue main loop with new state

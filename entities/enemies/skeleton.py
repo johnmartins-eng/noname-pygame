@@ -3,29 +3,18 @@ import pygame
 from entities.base_entity import AnimationModeEnum
 from entities.enemies.base_enemy import BaseEnemy
 from entities.items.jewel import Jewel
+from utils.game_context import GameContext
 
 
 class Skeleton(BaseEnemy):
-    def __init__(self, x=100, y=50, health=100, base_damage=5, speed=1.5):
-        super().__init__(x, y, health, base_damage, speed)
+    def __init__(self, x=100, y=50, assets=[], health=100, base_damage=5, speed=1.5):
+        super().__init__(x, y, health, base_damage, speed, assets)
         self.animation_mode = AnimationModeEnum.RUNNING
         # xp value on death
         self.xp_value = 10
 
     def load_frames(self):
-        # running frames
-        for i in range(0, 12):
-            name = f"sprite_0{i}.png" if i < 10 else f"sprite_{i}.png"
-            img = pygame.image.load(
-                f"assets/enemies/skeleton/walking/{name}").convert_alpha()
-            self.frames.append(pygame.transform.scale(img, (50, 70)))
-
-        # dying frames
-        for i in range(0, 15):
-            name = f"sprite_0{i}.png" if i < 10 else f"sprite_{i}.png"
-            img = pygame.image.load(
-                f"assets/enemies/skeleton/dying/{name}").convert_alpha()
-            self.frames.append(pygame.transform.scale(img, (50, 70)))
+        self.frames = self.assets
 
 
     def update_animation(self):
@@ -81,7 +70,7 @@ class Skeleton(BaseEnemy):
         elif dx < 0:
             self.facing_right = False
 
-    def update(self, target: pygame.sprite.Sprite, items_group: pygame.sprite.Group = None, all_sprites_group: pygame.sprite.Group =None, *args, **kwargs):
+    def update(self, game_context: GameContext, *args, **kwargs):
         if self.dying:
             self.update_animation()
             if self.frame_count >= 60:
@@ -92,7 +81,7 @@ class Skeleton(BaseEnemy):
             return
             
         self.update_animation()
-        self.items_group = items_group
-        self.all_sprites_group = all_sprites_group
-        if target is not None:
-            self.go_to_player(target)
+        self.items_group = game_context.items
+        self.all_sprites_group = game_context.all_sprites
+        if game_context.player is not None:
+            self.go_to_player(game_context.player)
