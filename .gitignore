@@ -210,3 +210,4 @@ __marimo__/
 #Vscode
 .vscode/
 todo.txt
+data/game.db
