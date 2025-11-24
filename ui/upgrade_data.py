@@ -5,13 +5,14 @@ from utils.game_context import GameContext
 
 class UpgradeData:
     """Holds data for a single upgrade choice."""
-    def __init__(self, name, description, effect_func, icon_color=(200, 200, 200)):
+    def __init__(self, name, description, effect_func, icon_path=None):
         self.name = name
         self.description = description
 
         self.effect_func = effect_func
 
-        self.icon_color = icon_color
+        self.icon_path = icon_path
+
 
 def effect_fire_circle(game_context):
     player = game_context.player
@@ -33,7 +34,7 @@ def effect_health(game_context):
 
 
 UPGRADE_POOL = [
-    UpgradeData("Might I", "Increases base damage by 50.", effect_might, (220, 50, 50)),
-    UpgradeData("Fire Ring", "A spinning fire that circles you.", effect_fire_circle, (255, 100, 0)),
-    UpgradeData("Full Roast", "Heals 30% of HP.", effect_health, (50, 220, 50)),
+    UpgradeData("Might I", "Increases base damage by 50.", effect_might, "assets/icons/might.png"),
+    UpgradeData("Fire Ring", "A spinning fire that circles you.", effect_fire_circle, "assets/icons/fire_ring.png"),
+    UpgradeData("Full Roast", "Heals 30% of HP.", effect_health, "assets/icons/full_roast.png"),
 ]

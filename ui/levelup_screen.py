@@ -21,7 +21,7 @@ class LevelUpScreen(BaseScreen):
         self.screen_height = screen_height
         self.is_active = False
         self.current_choices = []
-        
+        self.loaded_images = {}
         self.card_rects = [] 
 
     def generate_choices(self):
@@ -143,17 +143,25 @@ class LevelUpScreen(BaseScreen):
             is_hovered = card_rect.collidepoint(mouse_pos)
 
             self.draw_retro_border_rect(screen, card_rect, thickness=4, is_hovered=is_hovered)
+            
+            # --- Load icon image if not loaded ---
+            if upgrade_data.icon_path not in self.loaded_images:
+                img = pygame.image.load(upgrade_data.icon_path).convert_alpha()
+                img = pygame.transform.smoothscale(img, (64, 64))
+                self.loaded_images[upgrade_data.icon_path] = img
 
-            icon_size = 64
-            icon_rect = pygame.Rect(0,0, icon_size, icon_size)
+            icon_img = self.loaded_images[upgrade_data.icon_path]
+            
+            # --- Icon position ---
+            icon_rect = icon_img.get_rect()
             icon_rect.centerx = card_rect.centerx
-            icon_rect.top = card_rect.top + 50
-            pygame.draw.rect(screen, COLOR_FRAME_MID, icon_rect, width=3)
-            pygame.draw.rect(screen, upgrade_data.icon_color, icon_rect.inflate(-6,-6))
+            icon_rect.top = card_rect.top + 40
 
+            screen.blit(icon_img, icon_rect)
             name_color = COLOR_HOVER if is_hovered else COLOR_TEXT_TITLE
             name_surf = self.font_text.render(upgrade_data.name, False, name_color)
             screen.blit(name_surf, (card_rect.centerx - name_surf.get_width()//2, icon_rect.bottom + 15))
             
             desc_rect = pygame.Rect(card_rect.left, icon_rect.bottom + 40, card_rect.width, card_rect.height - 100)
             self.draw_text_wrapped(screen, upgrade_data.description, COLOR_TEXT_BODY, desc_rect, self.font_text)
+            
