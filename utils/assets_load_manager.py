@@ -30,6 +30,12 @@ class AssetsManager:
                 f"assets/enemies/skeleton/dying/{name}").convert_alpha()
             list_frames.append(pygame.transform.scale(img, (50, 70)))
 
+        for i in range(0, 8):
+            name = f"sprite_{i}.png"
+            img = pygame.image.load(
+                f"assets/enemies/skeleton/hit/{name}").convert_alpha()
+            list_frames.append(pygame.transform.scale(img, (50, 70)))
+
         self.__images['skeleton'] = list_frames
 
     def get_images(self, name: str) -> list:

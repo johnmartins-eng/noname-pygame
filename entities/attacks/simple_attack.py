@@ -57,7 +57,7 @@ class SimpleAttack(BaseAttack):
             if not self.damage_done:
                 hits = pygame.sprite.spritecollide(self, enemies, False, pygame.sprite.collide_mask)
                 for enemy in hits:
-                    enemy.take_damage(self.player.base_damage)
+                    self.on_hit(enemy)
                 self.damage_done = True
 
         if elapsed >= self.total_time:

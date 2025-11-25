@@ -8,7 +8,8 @@ class AnimationModeEnum(Enum):
     IDLE = 0,
     RUNNING = 1,
     ATTACKING = 2,
-    DYING = 3
+    DYING = 3,
+    ONHIT = 4
 
 
 class BaseEntity(pygame.sprite.Sprite, ABC):
