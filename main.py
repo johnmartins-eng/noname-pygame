@@ -183,7 +183,7 @@ if __name__ == "__main__":
                 # Save player's score (use current_xp as score)
                 try:
                     if current_user_id is not None:
-                        db.add_score(current_user_id, int(getattr(player, 'total_xp ', 0)))
+                        db.add_score(current_user_id, game_context.player.total_xp)
                 except Exception:
                     pass
 
