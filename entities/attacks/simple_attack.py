@@ -6,11 +6,11 @@ class SimpleAttack(BaseAttack):
     def __init__(self, player, speed=5):
         super().__init__(player, speed)
 
-        self.total_time = 180  
-        self.start_time = pygame.time.get_ticks()
+        self.__total_time = 180  
+        self.__start_time = pygame.time.get_ticks()
 
-        self.active_start = 40  
-        self.active_end   = 120
+        self.__active_start = 40  
+        self.__active_end   = 120
         
 
     def load_frames(self):
@@ -24,8 +24,8 @@ class SimpleAttack(BaseAttack):
             self.frames.append(rotated)
 
     def update_animation(self):
-        elapsed = pygame.time.get_ticks() - self.start_time
-        percent = elapsed / self.total_time
+        elapsed = pygame.time.get_ticks() - self.__start_time
+        percent = elapsed / self.__total_time
 
         if percent < 0.25:
             self.active_frame = 0
@@ -51,14 +51,14 @@ class SimpleAttack(BaseAttack):
         self.rect.centery = self.player.rect.centery + offset_y
 
         now = pygame.time.get_ticks()
-        elapsed = now - self.start_time
+        elapsed = now - self.__start_time
 
-        if self.active_start <= elapsed <= self.active_end:
+        if self.__active_start <= elapsed <= self.__active_end:
             if not self.damage_done:
                 hits = pygame.sprite.spritecollide(self, enemies, False, pygame.sprite.collide_mask)
                 for enemy in hits:
                     self.on_hit(enemy)
                 self.damage_done = True
 
-        if elapsed >= self.total_time:
+        if elapsed >= self.__total_time:
             self.kill()

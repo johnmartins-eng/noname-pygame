@@ -14,9 +14,7 @@ class Skeleton(BaseEnemy):
     def __init__(self, x=0, y=0, player_level=1, assets=[], health=50, base_damage=5, speed=1.5):
         super().__init__(x, y, health, base_damage, speed, assets)
         self.animation_mode = AnimationModeEnum.RUNNING
-        # xp value on death
-        self.xp_value = 10
-        self.stop_walking = False
+        self.__stop_walking = False
         self.health *= player_level
 
     def load_frames(self):
@@ -26,12 +24,12 @@ class Skeleton(BaseEnemy):
         if self.frame_count >= 60:
             self.frame_count = 0
             self.animation_mode = AnimationModeEnum.RUNNING
-            self.stop_walking = False
+            self.__stop_walking = False
         
         if self.frame_count >= 30 and self.animation_mode == AnimationModeEnum.ONHIT:
             self.frame_count = 0
             self.animation_mode = AnimationModeEnum.RUNNING
-            self.stop_walking = False
+            self.__stop_walking = False
 
         if self.animation_mode == AnimationModeEnum.RUNNING:
             frame_intervals = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
@@ -66,7 +64,7 @@ class Skeleton(BaseEnemy):
         elif self.health > 0:
             self.animation_mode = AnimationModeEnum.ONHIT
             self.frame_count = 0
-            self.stop_walking = True
+            self.__stop_walking = True
             if self.facing_right == True:
                 self.rect.x -= KNOCKBACK_VALUE
             elif self.facing_right == False:
@@ -76,7 +74,7 @@ class Skeleton(BaseEnemy):
         target.take_damage(self.base_damage)
 
     def __go_to_player(self, target: pygame.sprite.Sprite):
-        if self.stop_walking == False:
+        if self.__stop_walking == False:
             # Find direction vector (dx, dy) between enemy and player.
             dx, dy = target.rect.x - self.rect.x, target.rect.y - self.rect.y
             dist = math.hypot(dx, dy)

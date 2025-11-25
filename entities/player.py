@@ -21,8 +21,8 @@ class Player(BaseEntity):
                          health=200, base_damage=100, speed=3.0, assets=[])
         self.base_radius = BASE_RADIUS  # Pixels
 
-        self.attack_cooldown = 1400
-        self.last_attack_time = 0
+        self.__attack_cooldown = 1400
+        self.__last_attack_time = 0
 
         self.max_health = 200
 
@@ -117,8 +117,8 @@ class Player(BaseEntity):
 
     def __try_auto_attack(self, attacks_group, all_sprites_group):
         now = pygame.time.get_ticks()
-        if now - self.last_attack_time >= self.attack_cooldown:
-            self.last_attack_time = now
+        if now - self.__last_attack_time >= self.__attack_cooldown:
+            self.__last_attack_time = now
             attack = SimpleAttack(self)
             attacks_group.add(attack)
             all_sprites_group.add(attack)
