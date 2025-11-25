@@ -37,7 +37,6 @@ Certifique-se de ter o Python instalado.
     ```bash
     pip install -r requirements.txt
     ```
-    *(Nota: A única dependência é `pygame==2.6.1`)*
 
 3.  **Execute o jogo:**
     ```bash
