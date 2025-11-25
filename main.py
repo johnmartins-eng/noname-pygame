@@ -187,13 +187,12 @@ if __name__ == "__main__":
             game_over = GameOverScreen(screen)
             choice = game_over.run()
 
-            # Save player's score (use current_xp as score)
-            try:
-                if current_user_id is not None:
-                    db.add_score(current_user_id, int(
-                        getattr(player, 'total_xp', 0)))
-            except Exception:
-                pass
+                # Save player's score (use current_xp as score)
+                try:
+                    if current_user_id is not None:
+                        db.add_score(current_user_id, game_context.player.total_xp)
+                except Exception:
+                    pass
 
             if choice == "retry":
                 # Reset everything and continue playing
