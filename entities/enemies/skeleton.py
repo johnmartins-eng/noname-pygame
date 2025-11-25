@@ -26,6 +26,11 @@ class Skeleton(BaseEnemy):
             self.frame_count = 0
             self.animation_mode = AnimationModeEnum.RUNNING
             self.stop_walking = False
+        
+        if self.frame_count >= 30 and self.animation_mode == AnimationModeEnum.ONHIT:
+            self.frame_count = 0
+            self.animation_mode = AnimationModeEnum.RUNNING
+            self.stop_walking = False
 
         if self.animation_mode == AnimationModeEnum.RUNNING:
             frame_intervals = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
@@ -36,7 +41,7 @@ class Skeleton(BaseEnemy):
             frame_indexes = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
         if self.animation_mode == AnimationModeEnum.ONHIT:
-           frame_intervals = [7.5, 15, 22.5, 30, 37.5, 45, 52.5, 60]
+           frame_intervals = [3.75, 7.5, 11.25, 15, 18.75, 22.5, 26.5, 30]
            frame_indexes = [27, 28, 29, 30, 31, 32, 33, 34]
 
         for i in range(len(frame_intervals) - 1):
@@ -71,7 +76,7 @@ class Skeleton(BaseEnemy):
     def attack(self, target):
         target.take_damage(self.base_damage)
 
-    def go_to_player(self, target: pygame.sprite.Sprite):
+    def __go_to_player(self, target: pygame.sprite.Sprite):
         if self.stop_walking == False:
             # Find direction vector (dx, dy) between enemy and player.
             dx, dy = target.rect.x - self.rect.x, target.rect.y - self.rect.y
@@ -103,4 +108,4 @@ class Skeleton(BaseEnemy):
         self.items_group = game_context.items
         self.all_sprites_group = game_context.all_sprites
         if game_context.player is not None:
-            self.go_to_player(game_context.player)
+            self.__go_to_player(game_context.player)
