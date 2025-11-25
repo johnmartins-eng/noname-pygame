@@ -1,4 +1,4 @@
-# 🔥 Soulstorm (Pygame)
+# Soulstorm (Pygame)
 
 Um jogo de sobrevivência e ação top-down, estilo *roguelite*, desenvolvido com Pygame.
 
@@ -29,7 +29,7 @@ Certifique-se de ter o Python instalado.
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://aws.amazon.com/pt/what-is/repo/](https://aws.amazon.com/pt/what-is/repo/)
+    git clone https://github.com/johnmartins-eng/soulstorm-pygame
     cd soulstorm-pygame
     ```
 
